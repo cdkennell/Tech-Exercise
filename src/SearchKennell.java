@@ -111,6 +111,7 @@ public class SearchKennell extends HttpServlet {
                out.println("Armor Type: " + typename + "<br>");
                out.println("Unlock Method: " + method + "<br>");
                out.println("Part Description: " + part_desc + "<br>");
+               out.println("<br>");
             }
          }
          out.println("<a href=/webproject-TE-Kennell/search_kennell.html>Halo 3 Armor Database</a> <br>");
