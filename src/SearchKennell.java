@@ -20,11 +20,14 @@ public class SearchKennell extends HttpServlet {
    }
 
    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-      String keyword = request.getParameter("keyword");
-      search(keyword, response);
+	  String species = request.getParameter("species");
+	  String keyword = request.getParameter("keyword");
+      String type = request.getParameter("type");
+      search(species, keyword, type, response);
+      //search(keyword, response);
    }
 
-   void search(String keyword, HttpServletResponse response) throws IOException {
+   void search(String species, String keyword, String type, HttpServletResponse response) throws IOException {
       response.setContentType("text/html");
       PrintWriter out = response.getWriter();
       String title = "Armor Results";
@@ -42,30 +45,70 @@ public class SearchKennell extends HttpServlet {
          DBConnectionKennell.getDBConnection();
          connection = DBConnectionKennell.connection;
 
-         if (keyword.isEmpty()) {
+         if (species.isEmpty() && keyword.isEmpty() && type.isEmpty()) {
             String selectSQL = "SELECT * FROM myTableTE";
             preparedStatement = connection.prepareStatement(selectSQL);
-         } else {
-            String selectSQL = "SELECT * FROM myTableTE WHERE NAME LIKE ?";
-            String theUserName = keyword + "%";
+         } else if (species.isEmpty()){
+             String selectSQL = "SELECT * FROM myTableTE WHERE NAME LIKE ? AND TYPE LIKE ?";
+             String theUserName = keyword + "%";
+             String theTypeName = type + "%";
+             preparedStatement = connection.prepareStatement(selectSQL);
+             preparedStatement.setString(1, theUserName);
+             preparedStatement.setString(2, theTypeName);
+          } else if (species.isEmpty() && keyword.isEmpty()){
+              String selectSQL = "SELECT * FROM myTableTE WHERE TYPE LIKE ?";
+              String theTypeName = type + "%";
+              preparedStatement = connection.prepareStatement(selectSQL);
+              preparedStatement.setString(1, theTypeName);
+           } else if (species.isEmpty() && type.isEmpty()){
+               String selectSQL = "SELECT * FROM myTableTE WHERE NAME LIKE ?";
+               String theUserName = keyword + "%";
+               preparedStatement = connection.prepareStatement(selectSQL);
+               preparedStatement.setString(1, theUserName);
+            } else if (keyword.isEmpty()){
+            String selectSQL = "SELECT * FROM myTableTE WHERE SPECIES LIKE ? AND TYPE LIKE ?";
+            String theSpeciesName = species + "%";
+            String theTypeName = type + "%";
             preparedStatement = connection.prepareStatement(selectSQL);
-            preparedStatement.setString(1, theUserName);
+            preparedStatement.setString(1, theSpeciesName);
+            preparedStatement.setString(2, theTypeName);
+         } else if (keyword.isEmpty() && type.isEmpty()){
+             String selectSQL = "SELECT * FROM myTableTE WHERE SPECIES LIKE ?";
+             String theSpeciesName = species + "%";
+             preparedStatement = connection.prepareStatement(selectSQL);
+             preparedStatement.setString(1, theSpeciesName);
+          } else if (type.isEmpty()){
+             String selectSQL = "SELECT * FROM myTableTE WHERE SPECIES LIKE ? AND NAME LIKE ?";
+             String theSpeciesName = species + "%";
+             String theUserName = keyword + "%";
+             preparedStatement = connection.prepareStatement(selectSQL);
+             preparedStatement.setString(1, theSpeciesName);
+             preparedStatement.setString(2, theUserName);
+         } else {
+             String selectSQL = "SELECT * FROM myTableTE WHERE SPECIES LIKE ? AND NAME LIKE ? AND TYPE LIKE ?";
+             String theSpeciesName = species + "%";
+             String theUserName = keyword + "%";
+             String theTypeName = type + "%";
+             preparedStatement = connection.prepareStatement(selectSQL);
+             preparedStatement.setString(1, theSpeciesName);
+             preparedStatement.setString(2, theUserName);
+             preparedStatement.setString(3, theTypeName);
          }
          ResultSet rs = preparedStatement.executeQuery();
 
          while (rs.next()) {
             //int id = rs.getInt("id");
-            String species = rs.getString("species").trim();
+            String speciesname = rs.getString("species").trim();
             String name = rs.getString("name").trim();
-            String type = rs.getString("type").trim();
+            String typename = rs.getString("type").trim();
             String method = rs.getString("method").trim();
             String part_desc = rs.getString("part_desc").trim();
 
             if (keyword.isEmpty() || name.contains(keyword)) {
                //out.println("ID: " + id + ", ");
-               out.println("Species: " + species + "<br>");
+               out.println("Species: " + speciesname + "<br>");
                out.println("Armor Name: " + name + "<br>");
-               out.println("Armor Type: " + type + "<br>");
+               out.println("Armor Type: " + typename + "<br>");
                out.println("Unlock Method: " + method + "<br>");
                out.println("Part Description: " + part_desc + "<br>");
             }
