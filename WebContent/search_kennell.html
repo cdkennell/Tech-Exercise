@@ -35,16 +35,18 @@ footer {
 <h1> Halo 3 Armor Database </h1>
 </header>
 
-<nav>
+<!--<nav>
 <a href="/webproject-TE-Kennell/insert_kennell.html">Insert Data</a> <br>
-</nav>
+</nav>-->
 
 <section>
 	<h1>User Input</h1>
 	
 	<form action="SearchKennell" method="POST">
 	
+		Species (Spartan or Elite): <input type="text" name="species"> <br />
 		Armor Name: <input type="text" name="keyword"> <br />
+		Armor Type (Helmet, Pauldron, or body): <input type="text" name="type"> <br />
 		
 		<input type="submit" value="Search" />
 	</form>
